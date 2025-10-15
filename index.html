@@ -4,11 +4,26 @@
     <meta charset="UTF-8">
     <meta name=""viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            height: 100vh;
+            display: grid;
+            place-items: enter;
+            background-color: skyblue;
+            color: dimgray;
+        }
+    </style>
 </head>
 <body>
-    <div class="main">
-        <h1>Zuka blyat</h1>
-    </div>
+    <h1 id="connected">0</h1>>
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/ws")
+
+        socket.onmessage = function(event) {
+            document.getElementById("connected").textContent = event.data;
+        }
+    </script>
 </body>
 </html>
