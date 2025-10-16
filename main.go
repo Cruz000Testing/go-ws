@@ -29,7 +29,12 @@ func main() {
 			cl := <-broadcast
 
 			for client := range clients {
-				client.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(cl)))
+				err := client.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(cl)))
+
+				if err != nil {
+					client.Close()
+					delete(clients, client)
+				}
 			}
 		}
 	}()
@@ -44,18 +49,19 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer ws.Close()
-
 	clients[ws] = true
-
 	broadcast <- len(clients)
+
+	defer func() {
+		ws.Close()
+		delete(clients, ws)
+		broadcast <- len(clients)
+	}()
 
 	for {
 		_, _, err := ws.ReadMessage()
 
 		if err != nil {
-			ws.Close()
-			delete(clients, ws)
 			break
 		}
 	}
